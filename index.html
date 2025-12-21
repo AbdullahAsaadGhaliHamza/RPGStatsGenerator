@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DLTLGO Stats Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700;900&family=Bebas+Neue&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #1a0f0a;
+            --secondary-bg: #2d1810;
+            --card-bg: #3d2418;
+            --accent: #ff6b35;
+            --accent-secondary: #f7931e;
+            --accent-tertiary: #d4af37;
+            --text-primary: #f5e6d3;
+            --text-secondary: #c9a882;
+            --border: #5c3d2e;
+            --success: #6ab04c;
+            --danger: #eb4d4b;
+            --warning: #f0932b;
+            --shadow: rgba(255, 107, 53, 0.3);
+            --parchment: #f4e8d0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Pro', serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, #251509 50%, #1a0f0a 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 10% 20%, rgba(255, 107, 53, 0.15) 0%, transparent 40%),
+                radial-gradient(ellipse at 90% 80%, rgba(247, 147, 30, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(245, 230, 211, 0.02) 2px, rgba(245, 230, 211, 0.02) 4px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(61, 36, 24, 0.9) 0%, rgba(45, 24, 16, 0.95) 100%);
+            padding: 30px 35px;
+            border-radius: 0;
+            border: 3px solid var(--accent);
+            border-bottom: 6px solid var(--accent);
+            margin-bottom: 30px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 107, 53, 0.3),
+                0 0 40px rgba(255, 107, 53, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--accent-tertiary) 25%, 
+                var(--accent) 50%, 
+                var(--accent-tertiary) 75%, 
+                transparent 100%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 48px;
+            font-weight: 400;
+            letter-spacing: 6px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h1::before {
+            content: '⚔';
+            font-size: 42px;
+            -webkit-text-fill-color: var(--accent);
+            text-shadow: 0 0 20px var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        h1::after {
+            content: '⚔';
+            font-size: 42px;
+            -webkit-text-fill-color: var(--accent);
+            text-shadow: 0 0 20px var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 14px 20px;
+            background: rgba(26, 15, 10, 0.8);
+            border: 2px solid var(--border);
+            border-radius: 0;
+            color: var(--text-primary);
+            font-family: 'Crimson Pro', serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 
+                inset 0 2px 8px rgba(0, 0, 0, 0.4),
+                0 0 0 3px rgba(255, 107, 53, 0.2),
+                0 0 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: 2px solid var(--accent);
+            border-radius: 0;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 16px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            color: var(--primary-bg);
+            box-shadow: 
+                0 4px 0 rgba(0, 0, 0, 0.3),
+                0 8px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            color: var(--primary-bg);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 6px 0 rgba(0, 0, 0, 0.3),
+                0 12px 30px rgba(255, 107, 53, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 2px 0 rgba(0, 0, 0, 0.3),
+                0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .menu-bar {
+            background: linear-gradient(135deg, rgba(61, 36, 24, 0.6) 0%, rgba(45, 24, 16, 0.8) 100%);
+            padding: 18px 24px;
+            border-radius: 0;
+            border: 2px solid var(--border);
+            border-left: 4px solid var(--accent-tertiary);
+            border-right: 4px solid var(--accent-tertiary);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 107, 53, 0.2);
+        }
+
+        .menu-btn {
+            padding: 12px 22px;
+            background: linear-gradient(135deg, rgba(26, 15, 10, 0.9) 0%, rgba(45, 24, 16, 0.9) 100%);
+            border: 2px solid var(--border);
+            border-radius: 0;
+            color: var(--text-primary);
+            font-family: 'Crimson Pro', serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-btn:hover::before {
+            opacity: 1;
+        }
+
+        .menu-btn:hover {
+            color: var(--primary-bg);
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 6px 0 rgba(0, 0, 0, 0.3),
+                0 10px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .menu-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 2px 0 rgba(0, 0, 0, 0.3),
+                0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .menu-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .stat-section {
+            background: linear-gradient(135deg, rgba(61, 36, 24, 0.7) 0%, rgba(45, 24, 16, 0.85) 100%);
+            padding: 28px;
+            border-radius: 0;
+            border: 3px solid var(--border);
+            border-top: 4px solid var(--accent);
+            box-shadow: 
+                0 6px 20px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 107, 53, 0.2),
+                inset 0 -1px 0 rgba(212, 175, 55, 0.15);
+            animation: fadeIn 0.5s ease;
+            position: relative;
+        }
+
+        .stat-section::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 20px;
+            right: 20px;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--accent-tertiary) 50%, 
+                transparent 100%);
+        }
+
+        .stat-section::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 20px;
+            right: 20px;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--accent-tertiary) 50%, 
+                transparent 100%);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 24px;
+            font-weight: 400;
+            letter-spacing: 3px;
+            color: var(--accent);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px double var(--border);
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+            position: relative;
+        }
+
+        .section-title::before {
+            content: '◆';
+            margin-right: 12px;
+            color: var(--accent-tertiary);
+            font-size: 18px;
+        }
+
+        .section-title::after {
+            content: '◆';
+            margin-left: 12px;
+            color: var(--accent-tertiary);
+            font-size: 18px;
+        }
+
+        .stat-row {
+            display: grid;
+            grid-template-columns: 200px 1fr auto;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 8px;
+            border-bottom: 1px solid rgba(92, 61, 46, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .stat-row:hover {
+            background: rgba(255, 107, 53, 0.05);
+            border-bottom-color: var(--accent);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 15px;
+            color: var(--text-primary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-input {
+            padding: 10px 16px;
+            background: rgba(26, 15, 10, 0.8);
+            border: 2px solid var(--border);
+            border-radius: 0;
+            color: var(--accent-tertiary);
+            font-family: 'Courier Prime', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            width: 120px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(26, 15, 10, 0.95);
+            box-shadow: 
+                inset 0 2px 6px rgba(0, 0, 0, 0.5),
+                0 0 0 3px rgba(255, 107, 53, 0.2),
+                0 0 20px rgba(255, 107, 53, 0.3);
+            color: var(--accent);
+        }
+
+        .stat-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .stat-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid;
+            border-radius: 0;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
+            font-family: 'Bebas Neue', cursive;
+        }
+
+        .stat-btn.increment {
+            background: linear-gradient(135deg, var(--success) 0%, #4a9138 100%);
+            border-color: #3a7028;
+            color: var(--primary-bg);
+        }
+
+        .stat-btn.increment:hover {
+            background: linear-gradient(135deg, #7dd862 0%, var(--success) 100%);
+            box-shadow: 
+                0 5px 0 rgba(0, 0, 0, 0.4),
+                0 8px 20px rgba(106, 176, 76, 0.5);
+        }
+
+        .stat-btn.decrement {
+            background: linear-gradient(135deg, var(--danger) 0%, #c23838 100%);
+            border-color: #9a2828;
+            color: white;
+        }
+
+        .stat-btn.decrement:hover {
+            background: linear-gradient(135deg, #ff6b6b 0%, var(--danger) 100%);
+            box-shadow: 
+                0 5px 0 rgba(0, 0, 0, 0.4),
+                0 8px 20px rgba(235, 77, 75, 0.5);
+        }
+
+        .stat-btn.remove {
+            background: linear-gradient(135deg, var(--warning) 0%, #d47f1e 100%);
+            border-color: #b56b15;
+            color: var(--primary-bg);
+        }
+
+        .stat-btn.remove:hover {
+            background: linear-gradient(135deg, #ffa530 0%, var(--warning) 100%);
+            box-shadow: 
+                0 5px 0 rgba(0, 0, 0, 0.4),
+                0 8px 20px rgba(240, 147, 43, 0.5);
+        }
+
+        .stat-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .add-custom {
+            margin-top: 24px;
+            padding: 18px;
+            background: rgba(26, 15, 10, 0.5);
+            border: 2px dashed var(--accent-tertiary);
+            border-radius: 0;
+            display: flex;
+            gap: 12px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .add-custom input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(45, 24, 16, 0.8);
+            border: 2px solid var(--border);
+            border-radius: 0;
+            color: var(--text-primary);
+            font-family: 'Crimson Pro', serif;
+            font-size: 15px;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .add-custom input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 
+                inset 0 2px 6px rgba(0, 0, 0, 0.4),
+                0 0 0 2px rgba(255, 107, 53, 0.2);
+        }
+
+        .add-custom button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%);
+            color: var(--primary-bg);
+            border: 2px solid var(--accent-tertiary);
+            border-radius: 0;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 16px;
+            letter-spacing: 2px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .add-custom button:hover {
+            background: linear-gradient(135deg, var(--accent-tertiary) 0%, var(--accent-secondary) 100%);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 5px 0 rgba(0, 0, 0, 0.3),
+                0 10px 25px rgba(247, 147, 30, 0.4);
+        }
+
+        .add-custom button:active {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 2px 0 rgba(0, 0, 0, 0.3),
+                0 4px 15px rgba(247, 147, 30, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(61, 36, 24, 0.95) 0%, rgba(45, 24, 16, 0.98) 100%);
+            padding: 35px;
+            border-radius: 0;
+            border: 3px solid var(--accent);
+            border-top: 6px solid var(--accent-tertiary);
+            border-bottom: 6px solid var(--accent-tertiary);
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.7),
+                inset 0 1px 0 rgba(255, 107, 53, 0.3),
+                0 0 50px rgba(255, 107, 53, 0.3);
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 30px;
+            right: 30px;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--accent-tertiary) 50%, 
+                transparent 100%);
+        }
+
+        .modal-content::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 30px;
+            right: 30px;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--accent-tertiary) 50%, 
+                transparent 100%);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-content h2 {
+            margin-bottom: 24px;
+            color: var(--accent);
+            font-family: 'Bebas Neue', cursive;
+            font-size: 32px;
+            font-weight: 400;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255, 107, 53, 0.6);
+            text-align: center;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            height: 320px;
+            padding: 18px;
+            background: rgba(26, 15, 10, 0.9);
+            border: 2px solid var(--border);
+            border-radius: 0;
+            color: var(--text-primary);
+            font-family: 'Courier Prime', monospace;
+            font-size: 13px;
+            resize: vertical;
+            margin-bottom: 24px;
+            box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 
+                inset 0 3px 10px rgba(0, 0, 0, 0.5),
+                0 0 0 2px rgba(255, 107, 53, 0.2);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, rgba(45, 24, 16, 0.9) 0%, rgba(26, 15, 10, 0.9) 100%);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+            box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, rgba(92, 61, 46, 0.9) 0%, rgba(45, 24, 16, 0.9) 100%);
+            border-color: var(--accent-secondary);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 5px 0 rgba(0, 0, 0, 0.3),
+                0 10px 25px rgba(247, 147, 30, 0.3);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 2px 0 rgba(0, 0, 0, 0.3),
+                0 4px 15px rgba(247, 147, 30, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .stat-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .stat-input {
+                width: 100%;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-bar {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DLTLGO Stats Tool</h1>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search stats...">
+                <button class="btn btn-primary" onclick="clearSearch()">Clear Search</button>
+            </div>
+        </div>
+
+        <div class="menu-bar">
+            <button class="menu-btn" onclick="newProject()"><span>New Project</span></button>
+            <button class="menu-btn" onclick="loadProject()"><span>Load Project</span></button>
+            <button class="menu-btn" onclick="saveProject()"><span>Save Project</span></button>
+            <button class="menu-btn" onclick="importCSV()"><span>Import CSV</span></button>
+            <button class="menu-btn" onclick="exportCSV()"><span>Export CSV</span></button>
+            <button class="menu-btn" onclick="exportJSON()"><span>Export JSON</span></button>
+            <button class="menu-btn" onclick="addCustomStat()"><span>Add Custom Stat</span></button>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <!-- Stats sections will be dynamically generated -->
+        </div>
+    </div>
+
+    <!-- Modal for JSON/CSV export -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Export Data</h2>
+            <textarea id="exportData" readonly></textarea>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button class="btn btn-primary" onclick="copyToClipboard()">Copy to Clipboard</button>
+                <button class="btn btn-primary" onclick="downloadFile()">Download File</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data structure for all stats
+        const statsData = {
+            baseStats: [
+                'Health', 'Armor', 'Movement Speed', 'Attack Speed', 'Accuracy',
+                'Evasion/Dodge', 'Armor Penetration', 'Morale', 'Sanity',
+                'Damage to Elites', 'Target Amount', 'Projectile Duration'
+            ],
+            damageTypes: [
+                'Physical Damage', 'Magic Damage', 'Critical Hit Damage',
+                'Damage to Healthy', 'Damage to Injured', 'Fire', 'Earth',
+                'Electric', 'Air', 'Ice', 'Corrosion', 'Poison', 'Bleed',
+                'Paralyze', 'Charm', 'Stun', 'Holy', 'Death'
+            ],
+            procChances: [
+                'Critical Hit Chance', 'Instant Attack Chance', 'Burn Chance',
+                'Stun Chance', 'Freeze Chance', 'Slow Chance', 'Poison Chance',
+                'Bleed Chance', 'Paralyze', 'Charm', 'Corrosion', 'Rarity Chance',
+                'Block', 'Projectile Split', 'Chain/Ricochet Attack'
+            ],
+            tacticalStats: [
+                'Leadership', 'Formation Bonus', 'Flanking Bonus', 'Reach',
+                'Experience', 'Skill Tokens'
+            ],
+            customStats: []
+        };
+
+        // Current values for all stats
+        const currentValues = {};
+
+        // File download format
+        let currentExportFormat = 'json';
+        let currentExportData = '';
+
+        // Initialize the tool
+        function init() {
+            renderAllStats();
+            setupSearch();
+        }
+
+        // Render all stat sections
+        function renderAllStats() {
+            const grid = document.getElementById('statsGrid');
+            grid.innerHTML = '';
+
+            // Base Stats
+            grid.appendChild(createSection('Base Stats', statsData.baseStats, 'baseStats'));
+            
+            // Damage Types
+            grid.appendChild(createSection('Damage Types', statsData.damageTypes, 'damageTypes'));
+            
+            // Proc Chances
+            grid.appendChild(createSection('Proc Chances', statsData.procChances, 'procChances'));
+            
+            // Tactical Stats
+            grid.appendChild(createSection('Tactical Stats', statsData.tacticalStats, 'tacticalStats'));
+            
+            // Custom Stats - always show this section
+            grid.appendChild(createSection('Custom Stats', statsData.customStats, 'customStats'));
+        }
+
+        // Create a stat section
+        function createSection(title, stats, category) {
+            const section = document.createElement('div');
+            section.className = 'stat-section';
+            section.dataset.category = category;
+
+            const titleEl = document.createElement('div');
+            titleEl.className = 'section-title';
+            titleEl.textContent = title;
+            section.appendChild(titleEl);
+
+            stats.forEach(stat => {
+                const key = `${category}_${stat}`;
+                if (!(key in currentValues)) {
+                    currentValues[key] = 0;
+                }
+                section.appendChild(createStatRow(stat, key, category === 'customStats'));
+            });
+
+            if (category === 'customStats') {
+                section.appendChild(createAddCustomInput());
+            }
+
+            return section;
+        }
+
+        // Create a stat row
+        function createStatRow(label, key, isCustom) {
+            const row = document.createElement('div');
+            row.className = 'stat-row';
+            row.dataset.statKey = key;
+
+            const labelEl = document.createElement('div');
+            labelEl.className = 'stat-label';
+            labelEl.textContent = label;
+            row.appendChild(labelEl);
+
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.className = 'stat-input';
+            input.value = currentValues[key];
+            input.addEventListener('input', (e) => {
+                currentValues[key] = parseFloat(e.target.value) || 0;
+            });
+            row.appendChild(input);
+
+            const controls = document.createElement('div');
+            controls.className = 'stat-controls';
+
+            const incrementBtn = document.createElement('button');
+            incrementBtn.className = 'stat-btn increment';
+            incrementBtn.textContent = '+';
+            incrementBtn.onclick = () => {
+                currentValues[key]++;
+                input.value = currentValues[key];
+            };
+            controls.appendChild(incrementBtn);
+
+            const decrementBtn = document.createElement('button');
+            decrementBtn.className = 'stat-btn decrement';
+            decrementBtn.textContent = '−';
+            decrementBtn.onclick = () => {
+                currentValues[key]--;
+                input.value = currentValues[key];
+            };
+            controls.appendChild(decrementBtn);
+
+            if (isCustom) {
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'stat-btn remove';
+                removeBtn.textContent = '×';
+                removeBtn.onclick = () => {
+                    const statName = label;
+                    const index = statsData.customStats.indexOf(statName);
+                    if (index > -1) {
+                        statsData.customStats.splice(index, 1);
+                        delete currentValues[key];
+                        renderAllStats();
+                    }
+                };
+                controls.appendChild(removeBtn);
+            }
+
+            row.appendChild(controls);
+            return row;
+        }
+
+        // Create add custom stat input
+        function createAddCustomInput() {
+            const addDiv = document.createElement('div');
+            addDiv.className = 'add-custom';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter custom stat name...';
+            input.className = 'custom-stat-input';
+            addDiv.appendChild(input);
+
+            const addBtn = document.createElement('button');
+            addBtn.textContent = 'Add Stat';
+            addBtn.onclick = () => {
+                const statName = input.value.trim();
+                if (statName && !statsData.customStats.includes(statName)) {
+                    statsData.customStats.push(statName);
+                    input.value = '';
+                    renderAllStats();
+                }
+            };
+            addDiv.appendChild(addBtn);
+
+            // Allow pressing Enter to add stat
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addBtn.click();
+                }
+            });
+
+            return addDiv;
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('.stat-row');
+                
+                rows.forEach(row => {
+                    const label = row.querySelector('.stat-label').textContent.toLowerCase();
+                    if (label.includes(query)) {
+                        row.style.display = 'grid';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            const rows = document.querySelectorAll('.stat-row');
+            rows.forEach(row => row.style.display = 'grid');
+        }
+
+        // Export to JSON
+        function exportJSON() {
+            const data = organizeDataForExport();
+            const json = JSON.stringify(data, null, 2);
+            
+            currentExportFormat = 'json';
+            currentExportData = json;
+            
+            document.getElementById('modalTitle').textContent = 'Export JSON';
+            document.getElementById('exportData').value = json;
+            document.getElementById('exportModal').classList.add('active');
+        }
+
+        // Export to CSV
+        function exportCSV() {
+            const data = organizeDataForExport();
+            let csv = 'Category,Stat,Value\n';
+            
+            for (const [category, stats] of Object.entries(data)) {
+                for (const [stat, value] of Object.entries(stats)) {
+                    csv += `"${category}","${stat}",${value}\n`;
+                }
+            }
+            
+            currentExportFormat = 'csv';
+            currentExportData = csv;
+            
+            document.getElementById('modalTitle').textContent = 'Export CSV';
+            document.getElementById('exportData').value = csv;
+            document.getElementById('exportModal').classList.add('active');
+        }
+
+        // Organize data for export
+        function organizeDataForExport() {
+            const organized = {
+                baseStats: {},
+                damageTypes: {},
+                procChances: {},
+                tacticalStats: {},
+                customStats: {}
+            };
+
+            for (const [key, value] of Object.entries(currentValues)) {
+                const [category, ...nameParts] = key.split('_');
+                const name = nameParts.join('_');
+                organized[category][name] = value;
+            }
+
+            return organized;
+        }
+
+        // Save/Load project
+        function saveProject() {
+            const data = {
+                stats: currentValues,
+                customStats: statsData.customStats,
+                timestamp: new Date().toISOString()
+            };
+            const json = JSON.stringify(data, null, 2);
+            
+            currentExportFormat = 'json';
+            currentExportData = json;
+            
+            document.getElementById('modalTitle').textContent = 'Save Project';
+            document.getElementById('exportData').value = json;
+            document.getElementById('exportModal').classList.add('active');
+        }
+
+        function loadProject() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        Object.assign(currentValues, data.stats);
+                        if (data.customStats) {
+                            statsData.customStats = data.customStats;
+                        }
+                        renderAllStats();
+                        alert('Project loaded successfully!');
+                    } catch (err) {
+                        alert('Error loading project: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function newProject() {
+            if (confirm('This will clear all current data. Continue?')) {
+                for (const key in currentValues) {
+                    currentValues[key] = 0;
+                }
+                statsData.customStats = [];
+                renderAllStats();
+            }
+        }
+
+        // Import CSV
+        function importCSV() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const lines = event.target.result.split('\n');
+                        for (let i = 1; i < lines.length; i++) {
+                            const line = lines[i].trim();
+                            if (!line) continue;
+                            
+                            const matches = line.match(/(?:"([^"]*)"|([^,]*)),(?:"([^"]*)"|([^,]*)),([^,]*)/);
+                            if (matches) {
+                                const category = (matches[1] || matches[2]).trim();
+                                const stat = (matches[3] || matches[4]).trim();
+                                const value = parseFloat(matches[5]);
+                                
+                                const key = `${category}_${stat}`;
+                                currentValues[key] = value;
+                            }
+                        }
+                        renderAllStats();
+                        alert('CSV imported successfully!');
+                    } catch (err) {
+                        alert('Error importing CSV: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // Modal functions
+        function closeModal() {
+            document.getElementById('exportModal').classList.remove('active');
+        }
+
+        function copyToClipboard() {
+            const textarea = document.getElementById('exportData');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        }
+
+        function downloadFile() {
+            const data = currentExportData;
+            const filename = `stats-${Date.now()}.${currentExportFormat}`;
+            const blob = new Blob([data], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function addCustomStat() {
+            const statName = prompt('Enter custom stat name:');
+            if (statName && statName.trim()) {
+                const trimmedName = statName.trim();
+                if (!statsData.customStats.includes(trimmedName)) {
+                    statsData.customStats.push(trimmedName);
+                    renderAllStats();
+                }
+            }
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
