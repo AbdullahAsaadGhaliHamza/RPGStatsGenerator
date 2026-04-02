@@ -1,5 +1,7 @@
 # Stats Tool
 
+<img width="1920" height="1080" alt="RpgStatTool" src="https://github.com/user-attachments/assets/0e12019a-a47a-425d-844a-afdb68b01f1e" />
+
 Simple browser tool for managing and testing game stats.
 
 You can tweak values, add custom stats, and export everything as JSON or CSV. Useful for balancing, prototyping, or just organizing numbers without opening Excel every time.
